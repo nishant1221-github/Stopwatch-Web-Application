@@ -1,0 +1,95 @@
+<html>
+<head>
+    <title>Stopwatch App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"></link>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h1 class="text-3xl font-bold text-center mb-8">Stopwatch</h1>
+        <div class="text-center text-4xl font-mono mb-8" id="display">00:00:00</div>
+        <div class="flex justify-center space-x-4 mb-8">
+            <button id="startStopBtn" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 focus:outline-none">
+                <i class="fas fa-play"></i> Start
+            </button>
+            <button id="resetBtn" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none">
+                <i class="fas fa-redo"></i> Reset
+            </button>
+            <button id="lapBtn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none">
+                <i class="fas fa-flag"></i> Lap
+            </button>
+        </div>
+        <div>
+            <h2 class="text-xl font-bold mb-4" style="">Laps</h2>
+            <ul id="laps" class="list-disc list-inside space-y-2">
+                <!-- Lap times will be added here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let startTime, updatedTime, difference, tInterval, running = false;
+        const display = document.getElementById('display');
+        const startStopBtn = document.getElementById('startStopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const laps = document.getElementById('laps');
+
+        function startStop() {
+            if (!running) {
+                startTime = new Date().getTime();
+                tInterval = setInterval(getShowTime, 1);
+                startStopBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                startStopBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                startStopBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+                running = true;
+            } else {
+                clearInterval(tInterval);
+                startStopBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+                startStopBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+                startStopBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                running = false;
+            }
+        }
+
+        function reset() {
+            clearInterval(tInterval);
+            display.innerHTML = '00:00:00';
+            startStopBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+            startStopBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+            startStopBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            running = false;
+            laps.innerHTML = '';
+        }
+
+        function getShowTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            display.innerHTML = hours + ':' + minutes + ':' + seconds;
+        }
+
+        function recordLap() {
+            const lapTime = display.innerHTML;
+            const lapItem = document.createElement('li');
+            lapItem.textContent = lapTime;
+            laps.appendChild(lapItem);
+        }
+
+        startStopBtn.addEventListener('click', startStop);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', recordLap);
+    </script>
+</body>
+</html>
